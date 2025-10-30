@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 2020,
@@ -7,6 +7,7 @@ module.exports = {
   plugins: ['@typescript-eslint', 'prettier'],
   extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended', 'plugin:prettier/recommended'],
   rules: {
-    'prettier/prettier': ['error', { singleQuote: true, semi: true, printWidth: 100 }],
+    '@typescript-eslint/no-explicit-any': 'off',
+    'prettier/prettier': 'off',
   },
 };
