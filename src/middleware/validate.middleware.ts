@@ -1,29 +1,28 @@
 import { Request, Response, NextFunction } from 'express';
-import { ZodSchema } from 'zod';
+import { ZodObject, ZodRawShape } from 'zod';
 
-export const validate =
-  (schema: ZodSchema) => (req: Request, res: Response, next: NextFunction) => {
-    try {
-      schema.parse({
-        body: req.body,
-        query: req.query,
-        params: req.params,
-      });
-      next();
-    } catch (error: any) {
-      const groupedErrors: Record<string, string[]> = {};
+export const validate = (schema: ZodObject<ZodRawShape>) => (req: Request, res: Response, next: NextFunction) => {
+  try {
+    schema.parse({
+      body: req.body,
+      query: req.query,
+      params: req.params,
+    });
+    next();
+  } catch (error: any) {
+    const groupedErrors: Record<string, string[]> = {};
 
-      error.errors.forEach((err: any) => {
-        const field = err.path.join('.');
-        if (!groupedErrors[field]) {
-          groupedErrors[field] = [];
-        }
-        groupedErrors[field].push(err.message);
-      });
+    error.errors.forEach((err: any) => {
+      const field = err.path.join('.');
+      if (!groupedErrors[field]) {
+        groupedErrors[field] = [];
+      }
+      groupedErrors[field].push(err.message);
+    });
 
-      return res.status(400).json({
-        message: 'Validation error',
-        errors: groupedErrors,
-      });
-    }
-  };
+    return res.status(400).json({
+      message: 'Validation error',
+      errors: groupedErrors,
+    });
+  }
+};
