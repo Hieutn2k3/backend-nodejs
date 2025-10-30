@@ -1,0 +1,35 @@
+# Node modules
+node_modules/
+
+# Build output
+dist/
+build/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# VSCode
+.vscode/
+
+# MacOS
+.DS_Store
+
+# Prettier cache
+.prettiercache
+
+# Optional: IDE/editor specific
+.idea/
+*.sublime-workspace
+*.sublime-project
