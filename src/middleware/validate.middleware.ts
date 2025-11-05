@@ -1,28 +1,30 @@
 import { Request, Response, NextFunction } from 'express';
-import { ZodObject, ZodRawShape } from 'zod';
+import { ZodTypeAny, ZodError } from 'zod';
 
-export const validate = (schema: ZodObject<ZodRawShape>) => (req: Request, res: Response, next: NextFunction) => {
-  try {
-    schema.parse({
-      body: req.body,
-      query: req.query,
-      params: req.params,
-    });
-    next();
-  } catch (error: any) {
-    const groupedErrors: Record<string, string[]> = {};
-
-    error.errors.forEach((err: any) => {
-      const field = err.path.join('.');
-      if (!groupedErrors[field]) {
-        groupedErrors[field] = [];
+export const validate =
+  (schema: ZodTypeAny, type: 'body' | 'query' | 'params' = 'body') =>
+  (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const data = req[type] ?? {}; // đảm bảo không undefined
+      schema.parse(data);
+      next();
+    } catch (error: unknown) {
+      if (error instanceof ZodError) {
+        const groupedErrors: Record<string, string[]> = {};
+        error.issues.forEach((err) => {
+          const field = err.path.join('.') || 'root';
+          if (!groupedErrors[field]) groupedErrors[field] = [];
+          groupedErrors[field].push(err.message);
+        });
+        return res.status(400).json({
+          message: 'Validation error',
+          errors: groupedErrors,
+        });
       }
-      groupedErrors[field].push(err.message);
-    });
 
-    return res.status(400).json({
-      message: 'Validation error',
-      errors: groupedErrors,
-    });
-  }
-};
+      return res.status(500).json({
+        message: 'Internal server error',
+        error,
+      });
+    }
+  };

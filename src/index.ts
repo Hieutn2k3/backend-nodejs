@@ -1,16 +1,23 @@
-import express, { Request, Response } from 'express';
-import { env } from '@src/config/env';
+import express, { NextFunction, Request, Response, Router } from 'express';
+import { envConfig } from '@src/config/env';
+import { connectMongoDB } from '@src/connect/mongodb';
+import { UserRoutes } from '@src/routes/users/users.route';
+import { AuthRoutes } from './routes/auth/auth.route';
 
 const app = express();
-const PORT = env.PORT;
+const PORT = envConfig.PORT;
+// connect mongodb
+connectMongoDB(envConfig.DB_MONGO_URL);
 
 app.use(express.json());
 
-// Routes
-app.get('/', (req: Request, res: Response) => {
-  res.send('🚀 Hello from Express + TypeScript!');
-});
+// khai báo các route
+const authRouter = Router();
+const AUTH_ROUTES: Router[] = [UserRoutes, AuthRoutes];
+AUTH_ROUTES.forEach((route) => authRouter.use(route));
+app.use('/api/v1', authRouter);
 
+// start server
 app.listen(PORT, () => {
   console.log(`✅ Server is running on http://localhost:${PORT}`);
 });

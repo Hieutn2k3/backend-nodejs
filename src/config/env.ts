@@ -8,7 +8,9 @@ const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   PORT: z.string().transform(Number),
   JWT_SECRET: z.string().min(10),
-  DB_URL: z.string().url(),
+  DB_MONGO_URL: z.string().url(),
+  TOKEN_EXPIRES_IN: z.string().default('1h'),
+  REFRESH_TOKEN_EXPIRES_IN: z.string().default('7d'),
 });
 
 const _env = envSchema.safeParse(process.env);
@@ -20,4 +22,4 @@ if (!_env.success) {
 console.log('✅ Environment validated successfully');
 
 // Xuất ra type-safe object
-export const env = _env.data;
+export const envConfig = _env.data;
