@@ -1,6 +1,6 @@
 # Node modules
 node_modules/
-
+backup/
 # Build output
 dist/
 build/

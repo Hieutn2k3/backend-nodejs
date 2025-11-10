@@ -14,6 +14,9 @@ export const AuthController = {
       if (!existingUser) {
         return res.status(400).json({ error: 'Incorrect account information ' });
       }
+      if (!existingUser.isActive) {
+        return res.status(400).json({ error: 'Account is inactive. Please contact support.' });
+      }
       // 2.so sánh password
       const isPasswordValid = await BcryptService.comparePassword(password, existingUser.password);
       if (!isPasswordValid) {

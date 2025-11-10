@@ -7,6 +7,7 @@ const UsersSchema = new Schema(
     password: { type: String, required: true },
     role: { type: String, enum: ['user', 'admin'], default: 'user' },
     avatar: { type: String, default: '' },
+    isActive: { type: Boolean, default: true },
     refreshToken: { type: String, default: '' },
     createdAt: { type: Date, default: Date.now },
   },
