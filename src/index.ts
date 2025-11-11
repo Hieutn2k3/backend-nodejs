@@ -5,6 +5,7 @@ import { UserRoutes } from '@src/routes/users/users.route';
 import { AuthRoutes } from './routes/auth/auth.route';
 import { updateDB } from './service/updateDB.service';
 import cors from 'cors';
+import morgan from 'morgan';
 
 const app = express();
 const PORT = envConfig.PORT;
@@ -21,6 +22,7 @@ app.use(
 connectMongoDB(envConfig.DB_MONGO_URL);
 
 app.use(express.json());
+app.use(morgan('dev'));
 
 // khai báo các route
 const authRouter = Router();
@@ -29,7 +31,7 @@ AUTH_ROUTES.forEach((route) => authRouter.use(route));
 app.use('/api/v1', authRouter);
 
 // update DB
-updateDB();
+// updateDB();
 // start server
 app.listen(PORT, () => {
   console.log(`✅ Server is running on http://localhost:${PORT}`);
