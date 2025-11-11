@@ -4,9 +4,19 @@ import { connectMongoDB } from '@src/connect/mongodb';
 import { UserRoutes } from '@src/routes/users/users.route';
 import { AuthRoutes } from './routes/auth/auth.route';
 import { updateDB } from './service/updateDB.service';
+import cors from 'cors';
 
 const app = express();
 const PORT = envConfig.PORT;
+
+app.use(
+  cors({
+    origin: true, // Cho phép mọi origin
+    credentials: true, // Cho phép gửi cookie
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-User-Info'],
+  }),
+);
 // connect mongodb
 connectMongoDB(envConfig.DB_MONGO_URL);
 
