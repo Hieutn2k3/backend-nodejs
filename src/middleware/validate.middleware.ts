@@ -1,3 +1,4 @@
+import { StatusCode } from '@src/enums/status-code.enum';
 import { Request, Response, NextFunction } from 'express';
 import { ZodTypeAny, ZodError } from 'zod';
 
@@ -16,13 +17,13 @@ export const validate =
           if (!groupedErrors[field]) groupedErrors[field] = [];
           groupedErrors[field].push(err.message);
         });
-        return res.status(400).json({
+        return res.status(StatusCode.BAD_REQUEST).json({
           message: 'Validation error',
           errors: groupedErrors,
         });
       }
 
-      return res.status(500).json({
+      return res.status(StatusCode.INTERNAL_SERVER_ERROR).json({
         message: 'Internal server error',
         error,
       });

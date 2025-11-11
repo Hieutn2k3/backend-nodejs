@@ -1,4 +1,16 @@
 import mongoose, { Schema } from 'mongoose';
+import paginate from 'mongoose-paginate-v2';
+
+export interface IUser extends Document {
+  name: string;
+  email: string;
+  password: string;
+  role: 'user' | 'admin';
+  avatar: string;
+  isActive: boolean;
+  refreshToken: string;
+  createdAt: Date;
+}
 
 const UsersSchema = new Schema(
   {
@@ -14,4 +26,6 @@ const UsersSchema = new Schema(
   { timestamps: true },
 );
 
-export const UsersModel = mongoose.model('Users', UsersSchema);
+UsersSchema.plugin(paginate);
+
+export const UsersModel = mongoose.model<IUser, mongoose.PaginateModel<IUser>>('Users', UsersSchema);
