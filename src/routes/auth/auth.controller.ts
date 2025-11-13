@@ -3,8 +3,9 @@ import { UsersModel } from '@src/routes/users/users.model';
 import { BcryptService } from '@src/service/bcrypt.service';
 import { JwtService } from '@src/service/jsonwebtoken.service';
 import { RequestType } from '@src/types/request.type';
-import { v4 as uuidv4 } from 'uuid';
 import { StatusCode } from '@src/enums/status-code.enum';
+import OTPService from '@src/service/otp.service';
+import { OtpModel } from '@src/routes/otp/otp.model';
 
 export const AuthController = {
   Login: async (req: Request, res: Response) => {
@@ -15,6 +16,7 @@ export const AuthController = {
       if (!existingUser) {
         return res.status(StatusCode.BAD_REQUEST).json({ error: 'Incorrect account information ' });
       }
+      // 1.1 Kiểm tra xem user có được active không
       if (!existingUser.isActive) {
         return res.status(StatusCode.BAD_REQUEST).json({ error: 'Account is inactive. Please contact support.' });
       }
@@ -23,35 +25,21 @@ export const AuthController = {
       if (!isPasswordValid) {
         return res.status(StatusCode.BAD_REQUEST).json({ error: 'Incorrect  password' });
       }
-      // 3.tạo access token và refresh token
-      const ACCESS_TOKEN = JwtService.signToken({
-        id: existingUser._id,
-        email: existingUser.email,
-        role: existingUser.role,
-        idToken: uuidv4(),
+      //  3.tạo otp và lưu vào DB
+      const otpCode = OTPService.generateOTP();
+      await OtpModel.deleteOne({ userId: existingUser._id });
+      await OtpModel.create({
+        otp: otpCode,
+        userId: existingUser._id,
       });
-      const REFRESH_TOKEN = JwtService.signRefreshToken({
-        id: existingUser._id,
-        email: existingUser.email,
-        role: existingUser.role,
-      });
-      // 4.lưu refresh token vào database
-      await UsersModel.updateOne({ _id: existingUser._id }, { $set: { refreshToken: REFRESH_TOKEN } });
+      // Gửi email (giả lập)
+      console.log(`OTP cho ${email}: ${otpCode} (hết hạn sau 60s)`);
 
-      // 5.Trả về thông tin user + token
       res.status(StatusCode.OK).json({
-        message: 'Login successful',
-        data: {
-          userId: existingUser._id,
-          name: existingUser.name,
-          email: existingUser.email,
-          role: existingUser.role,
-          avatar: existingUser.avatar,
-          accessToken: ACCESS_TOKEN,
-          refreshToken: REFRESH_TOKEN,
-        },
+        message: 'Verify account',
       });
     } catch (error) {
+      console.log(error);
       return res.status(StatusCode.INTERNAL_SERVER_ERROR).json({ error });
     }
   },

@@ -2,9 +2,10 @@ import express, { NextFunction, Request, Response, Router } from 'express';
 import { envConfig } from '@src/config/env';
 import { connectMongoDB } from '@src/connect/mongodb';
 import { UserRoutes } from '@src/routes/users/users.route';
-import { AuthRoutes } from './routes/auth/auth.route';
+import { AuthRoutes } from '@src/routes/auth/auth.route';
 import { updateDB } from './service/updateDB.service';
 import cors from 'cors';
+import { OtpRouter } from '@src/routes/otp/otp.route';
 
 const app = express();
 const PORT = envConfig.PORT;
@@ -24,7 +25,7 @@ app.use(express.json());
 
 // khai báo các route
 const authRouter = Router();
-const AUTH_ROUTES: Router[] = [UserRoutes, AuthRoutes];
+const AUTH_ROUTES: Router[] = [UserRoutes, AuthRoutes, OtpRouter];
 AUTH_ROUTES.forEach((route) => authRouter.use(route));
 app.use('/api/v1', authRouter);
 

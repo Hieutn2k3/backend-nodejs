@@ -57,6 +57,7 @@ export const updateDB = async () => {
     // SAU NÀY CHỈ CẦN THÊM DÒNG MỚI VÀO ĐÂY:
     // pharse 1
     await addFieldIfNotExists(UsersModel, 'isActive', true);
+    await addFieldIfNotExists(UsersModel, 'otp', null);
 
     console.log('TẤT CẢ MIGRATION ĐÃ HOÀN TẤT!');
   } catch (err) {
